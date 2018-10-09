@@ -1,9 +1,11 @@
 Package: knapsack
 Title: What the Package Does (one line, title case)
 Version: 0.0.0.9000
-Authors@R: person("First", "Last", email = "first.last@example.com", role = c("aut", "cre"))
+Authors@R: c(person("Gustav", "Lundberg", email = "guslu389@student.liu.se",role = c("aut")),
+             person("Faton", "Rekathati", email = "fatre714@student.liu.se", role = c("aut")),
+             person("Alexander", "Karlsson", email = "aleka769@student.liu.se", role = c("aut", "cre")))
 Description: What the package does (one paragraph).
-Depends: R (>= 3.4.2)
-License: What license is it under?
+Depends: R (>= 3.4.0)
+License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
