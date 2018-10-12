@@ -9,8 +9,7 @@
 #' @export
 #'
 #' @examples
-brute_force_knapsack <- function(x, W, fast = FALSE, parallel = FALSE){
-  if(fast){message("not yet implemented")}
+brute_force_knapsack <- function(x, W, parallel = FALSE){
   # error checks
   stopifnot(is.data.frame(x))
   stopifnot(c("v", "w") %in% names(x))
@@ -18,12 +17,19 @@ brute_force_knapsack <- function(x, W, fast = FALSE, parallel = FALSE){
   stopifnot(any(x$w <= W) || any(x$v > 0))
   stopifnot(W > 0)
   
-  x <- as.matrix(x[,c("v","w")])
   n <- dim(x)[1]
-  combo_count <- (2^n)-1
+  
+  max_objects <- 30L
+  min_parallel <- 20L
+  force_parallel <- 25L
+  # stopping if data will be too large
+  stopifnot(n <= max_objects)
+  if(.Platform$OS.type != "unix" & n > force_parallel){
+    stop("Can only run calculations on large object sets in parallel which requires Linux")
+  }
   
   # checking if parallelization is requested and can be used
-  if (parallel & .Platform$OS.type == "unix"){ 
+  if (n >= min_parallel & parallel & .Platform$OS.type == "unix"){ 
     core_count <- parallel::detectCores()-1 
   }
   else if (parallel & .Platform$OS.type != "unix") {
@@ -33,19 +39,48 @@ brute_force_knapsack <- function(x, W, fast = FALSE, parallel = FALSE){
   else {
     core_count <- 1L
   }
-
-  # generating all combinations of elements as binary matrix
-  combn_mat <- matrix(NA, nrow = combo_count, ncol = n)
-  for (rownum in  1:combo_count){
-    combn_mat[rownum+1, ] <- as.integer(intToBits(rownum))[1:n]
+  
+  # experimental way of handling memory issues in large object sets
+  if (n %in% seq(force_parallel,max_objects)) {
+    core_count <- core_count * 2^(n-force_parallel)
   }
-
-  # result is matrix product of combinations and data
-  result_mat <- combn_mat %*% x
-
-  # removing combinations with weight above maxweight
-  result_mat[result_mat[,"w"] > W, ] <- NA
-  max_element <- which.max(result_mat[,"v"])
-  return(list(value = unname(result_mat[max_element,"v"]),
-              elements = seq(1,n,1)[combn_mat[max_element,] == 1L]))
+  
+  # generate list of numbers for each core to copmute on
+  combo_count <- (2^n)-1
+  combos_per_core <- combo_count%/%core_count
+  core_combos <- lapply(1:core_count, function(x){
+    seq((x-1)*(combos_per_core),(x)*(combos_per_core),1)
+  })
+  if (combo_count%%core_count != 0){
+    remainder_seq <- seq(combos_per_core*core_count+1,combo_count,1)
+    core_combos[[core_count]]<-c(core_combos[[core_count]],remainder_seq)
+  }
+  
+  # define function to do actual computaion and generate candidates for max value
+  max_core_combo <- function(index, combo_vec=core_combos[[index]], object_matrix){
+    n <- dim(object_matrix)[1]
+    
+    combn_mat <- matrix(NA, nrow = length(combo_vec), ncol = n)
+    for (rownum in  1:length(combo_vec)){
+      combn_mat[rownum, ] <- as.integer(intToBits(combo_vec[rownum]))[1:n]
+    }
+    
+    result_mat <- combn_mat %*% object_matrix
+    
+    # removing combinations with weight above maxweight
+    result_mat[result_mat[,"w"] > W, ] <- NA
+    
+    max_element <- which.max(result_mat[,"v"])
+    
+    c(unname(result_mat[max_element, ]), combn_mat[max_element, ])
+  }
+  
+  # runs computation in the specified no of segments and cores
+  x <- as.matrix(x[,c("v","w")])
+  max_per_core <-  mclapply(X = 1:core_count, FUN = max_core_combo, 
+                            object_matrix = x, mc.cores = core_count)
+  max_element <- which.max(do.call(rbind, max_per_core)[,1])
+  
+  list(value = max_per_core[[max_element]][1],
+       elements = seq(1,n,1)[max_per_core[[max_element]][-c(1,2)] == 1L])
 }
