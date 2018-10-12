@@ -1,13 +1,10 @@
-set.seed(42)
-n <- 2000
-knapsack_objects <-
-  data.frame(
-    w=sample(1:4000, size = n, replace = TRUE),
-    v=runif(n = n, 0, 10000)
-  )
 
 dynamic_knapsack <- function(x, W){
-  # Tests for input...
+  stopifnot(is.data.frame(x))
+  stopifnot(c("v", "w") %in% names(x))
+  stopifnot(is.numeric(x$w)&&is.numeric(x$v))
+  stopifnot(any(x$w <= W) || any(x$v > 0) )
+  stopifnot(W > 0)
   
   value_mat <- matrix(NA, nrow = nrow(x) + 1, ncol = W + 1)
   value_mat[1,] <- 0
@@ -33,9 +30,9 @@ dynamic_knapsack <- function(x, W){
   return(value_mat)
 }
 
-y <- data.frame(w = c(4,1,3,2,5,2),
-                v = c(7,3,6,9,2,4))
-dynamic_knapsack(x = y, W = 6)
+# y <- data.frame(w = c(4,1,3,2,5,2),
+#                 v = c(7,3,6,9,2,4))
+# dynamic_knapsack(x = y, W = 6)
 
 
 # index <- seq(3000, 10000, by = 20)
