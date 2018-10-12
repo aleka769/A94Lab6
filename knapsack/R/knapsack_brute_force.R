@@ -29,7 +29,7 @@ brute_force_knapsack <- function(x, W, fast = FALSE, parallell = FALSE){
   
   # result is matrix product of combinations and data
   if(parallell){
-    result_mat <- mclapply(X=1:2^n, mc.cores = 1, FUN=function(row){
+    result_mat <- parallel::mclapply(X=1:2^n, mc.cores = 1, FUN=function(row){
       `%*%`(combn_mat[row,],x)})
   } else {
     result_mat <- combn_mat %*% x
