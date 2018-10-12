@@ -11,7 +11,7 @@
 #'
 #' @examples
 
-knapsack_greedy_heuristic <- function(x, W, fast = FALSE){
+greedy_knapsack <- function(x, W, fast = FALSE){
   
   if(fast){message("Sorry, not yet implemented")}
   
@@ -19,7 +19,8 @@ knapsack_greedy_heuristic <- function(x, W, fast = FALSE){
   stopifnot(is.data.frame(x))
   stopifnot(c("v", "w") %in% names(x))
   stopifnot(is.numeric(x$w)&&is.numeric(x$v))
-  stopifnot(any(x$w) <= W || any(x$v) > 0 )
+  stopifnot(any(x$w <= W) || any(x$v > 0) )
+  stopifnot(W > 0)
   
   x$quota <- x$v / x$w
   row_order <- order(x$quota, decreasing = TRUE)
@@ -44,7 +45,7 @@ knapsack_greedy_heuristic <- function(x, W, fast = FALSE){
     
   }
   
-  list(elements = sort(row_order[elements]),
-       value = value,
+  list(value = value,
+       elements = sort(row_order[elements]),
        cum_weight)
 }

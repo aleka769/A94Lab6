@@ -9,12 +9,13 @@
 #' @export
 #'
 #' @examples
-knapsack_brute_force <- function(x, W){
+brute_force_knapsack <- function(x, W){
   # error checks
   stopifnot(is.data.frame(x))
   stopifnot(c("v", "w") %in% names(x))
   stopifnot(is.numeric(x$w)&&is.numeric(x$v))
-  stopifnot(any(x$w) <= W || any(x$v) > 0)
+  stopifnot(any(x$w <= W) || any(x$v > 0))
+  stopifnot(W > 0)
   
   x <- as.matrix(x)
   n <- dim(x)[1]
@@ -33,6 +34,6 @@ knapsack_brute_force <- function(x, W){
   
   max_element <- which.max(result_mat[,"v"])
   
-  list(element = seq(1,n,1)[combn_mat[max_element,] == 1L],
-       value = unname(result_mat[max_element,"v"]))
+  list(value = unname(result_mat[max_element,"v"]),
+       elements = seq(1,n,1)[combn_mat[max_element,] == 1L])
 }
