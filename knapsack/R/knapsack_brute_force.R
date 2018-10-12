@@ -9,7 +9,8 @@
 #' @export
 #'
 #' @examples
-brute_force_knapsack <- function(x, W){
+brute_force_knapsack <- function(x, W, fast = FALSE, parallell = FALSE){
+  if(fast){message("not yet implemented")}
   # error checks
   stopifnot(is.data.frame(x))
   stopifnot(c("v", "w") %in% names(x))
@@ -27,7 +28,12 @@ brute_force_knapsack <- function(x, W){
   }
   
   # result is matrix product of combinations and data
-  result_mat <- combn_mat %*% x
+  if(parallell){
+    result_mat <- mclapply(X=1:2^n, mc.cores = 1, FUN=function(row){
+      `%*%`(combn_mat[row,],x)})
+  } else {
+    result_mat <- combn_mat %*% x
+  }
   
   # removing combinations with weight above maxweight
   result_mat[result_mat[,"w"] > W,2] <- NA
