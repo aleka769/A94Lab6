@@ -28,6 +28,25 @@ brute_force_knapsack <- function(x, W, parallel = FALSE){
     stop("Can only run calculations on large object sets in parallel which requires Linux")
   }
   
+  # define function to do actual computaion and generate candidates for max value
+  max_core_combo <- function(index, combo_vec=core_combos[[index]], object_matrix){
+    n <- dim(object_matrix)[1]
+    
+    combn_mat <- matrix(NA, nrow = length(combo_vec), ncol = n)
+    for (rownum in  1:length(combo_vec)){
+      combn_mat[rownum, ] <- as.integer(intToBits(combo_vec[rownum]))[1:n]
+    }
+    
+    result_mat <- combn_mat %*% object_matrix
+    
+    # removing combinations with weight above maxweight
+    result_mat[result_mat[,"w"] > W, ] <- NA
+    
+    max_element <- which.max(result_mat[,"v"])
+    
+    c(unname(result_mat[max_element, ]), combn_mat[max_element, ])
+  }
+  
   # checking if parallelization is requested and can be used
   if (n >= min_parallel & parallel & .Platform$OS.type == "unix"){ 
     core_count <- parallel::detectCores()-1 
@@ -54,25 +73,6 @@ brute_force_knapsack <- function(x, W, parallel = FALSE){
   if (combo_count%%core_count != 0){
     remainder_seq <- seq(combos_per_core*core_count+1,combo_count,1)
     core_combos[[core_count]]<-c(core_combos[[core_count]],remainder_seq)
-  }
-  
-  # define function to do actual computaion and generate candidates for max value
-  max_core_combo <- function(index, combo_vec=core_combos[[index]], object_matrix){
-    n <- dim(object_matrix)[1]
-    
-    combn_mat <- matrix(NA, nrow = length(combo_vec), ncol = n)
-    for (rownum in  1:length(combo_vec)){
-      combn_mat[rownum, ] <- as.integer(intToBits(combo_vec[rownum]))[1:n]
-    }
-    
-    result_mat <- combn_mat %*% object_matrix
-    
-    # removing combinations with weight above maxweight
-    result_mat[result_mat[,"w"] > W, ] <- NA
-    
-    max_element <- which.max(result_mat[,"v"])
-    
-    c(unname(result_mat[max_element, ]), combn_mat[max_element, ])
   }
   
   # runs computation in the specified no of segments and cores
