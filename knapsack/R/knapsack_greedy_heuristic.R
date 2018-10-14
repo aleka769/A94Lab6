@@ -13,8 +13,6 @@
 
 greedy_knapsack <- function(x, W, fast = FALSE){
   
-  if(fast){message("Sorry, not yet implemented")}
-  
   # error checks
   stopifnot(is.data.frame(x))
   stopifnot(c("v", "w") %in% names(x))
