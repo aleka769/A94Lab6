@@ -5,8 +5,10 @@
 #' @param fast not implemented
 #'
 #' @return list with elements 
-#'   \item 'elements' denoting which objects in x that were used
-#'   \item 'value' denoting the sum of value for the used objects
+#' \itemize{
+#'   \item {'elements' denoting which objects in x that were used}
+#'   \item {'value' denoting the sum of value for the used objects}
+#'   }
 #' @export
 #'
 #' @examples \dontrun{

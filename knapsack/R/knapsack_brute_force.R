@@ -2,12 +2,15 @@
 #'
 #' @param x Data.frame with variables 'v' and 'w'
 #' @param W Maximum weight that knapsack can be packed with
+#' @param parallel set to TRUE to use all but one cores of CPU for algorithm solving, only used in unx environments
 #'
 #' @return list with elements 
+#' \itemize{
 #'   \item {'elements' denoting which objects in x that were used}
 #'   \item {'value' denoting the sum of value for the used objects}
+#'   }
 #' @export
-#'
+#' @import parallel
 #' @examples \dontrun{
 #' set.seed(666)
 #' n <- 9
@@ -55,7 +58,15 @@ brute_force_knapsack <- function(x, W, parallel = FALSE){
   }
   
   # checking if parallelization is requested and can be used
-  if (n >= min_parallel & parallel & .Platform$OS.type == "unix"){ 
+  # workaround to get parallelisation through check according to
+  # https://cran.r-project.org/web/packages/policies.html
+  chk <- Sys.getenv("_R_CHECK_LIMIT_CORES_", "")
+  
+  if (nzchar(chk) && chk == "TRUE") {
+    # use 2 cores in CRAN/Travis/AppVeyor
+    core_count <- 2L
+  }
+  else if (n >= min_parallel & parallel & .Platform$OS.type == "unix"){ 
     core_count <- parallel::detectCores()-1 
   }
   else if (parallel & .Platform$OS.type != "unix") {

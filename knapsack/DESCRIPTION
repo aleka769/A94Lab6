@@ -5,7 +5,6 @@ Authors@R: c(person("Gustav", "Lundberg", email = "guslu389@student.liu.se",role
              person("Faton", "Rekathati", email = "fatre714@student.liu.se", role = c("aut")),
              person("Alexander", "Karlsson", email = "aleka769@student.liu.se", role = c("aut", "cre")))
 Description: Three different ways of solving th eknapsack 0-1 problem, brute force, dynamic and approximate greedy heuristic.
-Depends: R 
 License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true

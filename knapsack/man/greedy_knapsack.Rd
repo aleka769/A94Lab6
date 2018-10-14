@@ -15,9 +15,21 @@ greedy_knapsack(x, W, fast = FALSE)
 }
 \value{
 list with elements 
-  \item 'elements' denoting which objects in x that were used
-  \item 'value' denoting the sum of value for the used objects
+\itemize{
+  \item {'elements' denoting which objects in x that were used}
+  \item {'value' denoting the sum of value for the used objects}
+  }
 }
 \description{
 Knapsack greedy algorithm implementation
+}
+\examples{
+\dontrun{
+set.seed(666)
+n <- 9000
+stuff <- data.frame(w = sample(1:10, n, replace = TRUE),
+                    v = sample(4:12, n, replace = TRUE))
+# returns value = 46 made up from elements 2,4,5,7,8,9
+greedy_knapsack(stuff,25)
+}
 }

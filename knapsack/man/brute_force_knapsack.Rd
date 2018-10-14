@@ -10,12 +10,26 @@ brute_force_knapsack(x, W, parallel = FALSE)
 \item{x}{Data.frame with variables 'v' and 'w'}
 
 \item{W}{Maximum weight that knapsack can be packed with}
+
+\item{parallel}{set to TRUE to use all but one cores of CPU for algorithm solving, only used in unx environments}
 }
 \value{
 list with elements 
-  \item 'elements' denoting which objects in x that were used
-  \item 'value' denoting the sum of value for the used objects
+\itemize{
+  \item {'elements' denoting which objects in x that were used}
+  \item {'value' denoting the sum of value for the used objects}
+  }
 }
 \description{
 Knapsack brute force algorithm implementation
+}
+\examples{
+\dontrun{
+set.seed(666)
+n <- 9
+stuff <- data.frame(w = sample(1:10, n, replace = TRUE),
+                    v = sample(4:12, n, replace = TRUE))
+# returns value = 46 made up from elements 2,4,5,7,8,9
+brute_force_knapsack(stuff,25)
+}
 }
