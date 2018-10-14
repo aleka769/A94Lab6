@@ -1,11 +1,17 @@
 Package: knapsack
-Title: What the Package Does (one line, title case)
+Title: Implementations of three alorithms for knapsack problem solving
 Version: 0.0.0.9000
 Authors@R: c(person("Gustav", "Lundberg", email = "guslu389@student.liu.se",role = c("aut")),
              person("Faton", "Rekathati", email = "fatre714@student.liu.se", role = c("aut")),
              person("Alexander", "Karlsson", email = "aleka769@student.liu.se", role = c("aut", "cre")))
-Description: What the package does (one paragraph).
-Depends: R (>= 3.4.0)
+Description: Three different ways of solving th eknapsack 0-1 problem, brute force, dynamic and approximate greedy heuristic.
+Depends: R 
 License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
+RoxygenNote: 6.1.0
+Imports: parallel
+URL: https://github.com/aleka769/A94Lab6
+BugReports: https://github.com/aleka769/A94Lab6/issues
+Suggests: testthat, knitr, rmarkdown
+VignetteBuilder: knitr

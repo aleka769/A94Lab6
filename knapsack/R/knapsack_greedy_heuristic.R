@@ -9,8 +9,14 @@
 #'   \item 'value' denoting the sum of value for the used objects
 #' @export
 #'
-#' @examples
-
+#' @examples \dontrun{
+#' set.seed(666)
+#' n <- 9000
+#' stuff <- data.frame(w = sample(1:10, n, replace = TRUE),
+#'                     v = sample(4:12, n, replace = TRUE))
+#' # returns value = 46 made up from elements 2,4,5,7,8,9
+#' greedy_knapsack(stuff,25)
+#' }
 greedy_knapsack <- function(x, W, fast = FALSE){
   
   if(fast){message("Sorry, not yet implemented")}
@@ -46,6 +52,5 @@ greedy_knapsack <- function(x, W, fast = FALSE){
   }
   
   list(value = value,
-       elements = sort(row_order[elements]),
-       cum_weight)
+       elements = sort(row_order[elements]))
 }

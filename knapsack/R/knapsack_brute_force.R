@@ -4,11 +4,18 @@
 #' @param W Maximum weight that knapsack can be packed with
 #'
 #' @return list with elements 
-#'   \item 'elements' denoting which objects in x that were used
-#'   \item 'value' denoting the sum of value for the used objects
+#'   \item {'elements' denoting which objects in x that were used}
+#'   \item {'value' denoting the sum of value for the used objects}
 #' @export
 #'
-#' @examples
+#' @examples \dontrun{
+#' set.seed(666)
+#' n <- 9
+#' stuff <- data.frame(w = sample(1:10, n, replace = TRUE),
+#'                     v = sample(4:12, n, replace = TRUE))
+#' # returns value = 46 made up from elements 2,4,5,7,8,9
+#' brute_force_knapsack(stuff,25)
+#' }
 brute_force_knapsack <- function(x, W, parallel = FALSE){
   # error checks
   stopifnot(is.data.frame(x))
@@ -77,8 +84,8 @@ brute_force_knapsack <- function(x, W, parallel = FALSE){
   
   # runs computation in the specified no of segments and cores
   x <- as.matrix(x[,c("v","w")])
-  max_per_core <-  mclapply(X = 1:core_count, FUN = max_core_combo, 
-                            object_matrix = x, mc.cores = core_count)
+  max_per_core <-  parallel::mclapply(X = 1:core_count, FUN = max_core_combo, 
+                                      object_matrix = x, mc.cores = core_count)
   max_element <- which.max(do.call(rbind, max_per_core)[,1])
   
   list(value = max_per_core[[max_element]][1],
