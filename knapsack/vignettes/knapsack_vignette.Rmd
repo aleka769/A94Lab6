@@ -126,7 +126,7 @@ p <- profvis::profvis({
 p
 ```
 
-The computational time without the `pause` call is 0.03 seconds. LET'S SAY SOMETHING ABOUT APPROACH HERE. I CAN'T THINK OF  FASTER WAY TO IMPLEMENT THIS!
+The computational time without the `pause` call is 0.03 seconds. The while-loop and if-statement that ...DOES SOMETHING... are most time consuming. LET'S SAY SOMETHING ABOUT APPROACH HERE. I CAN'T THINK OF  FASTER WAY TO IMPLEMENT THIS!
 
 ### Brute force function
 
@@ -230,4 +230,5 @@ p <- profvis::profvis({
 p
 ```
 
-The time demanding calculations from function call above is not suprisingly `intToBits` and `mcLapply`. However, the `profvis` profiling has been done with a windows OS using only one core, thereby computational time can probably be lowered with more cores.
+The time demanding calculations from function call above is not suprisingly `intToBits` and `mcLapply`. However, the `profvis` profiling has been done with a windows OS using only one core, thereby computational time can probably be lowered if more cores would be used (only for Linux).
+
