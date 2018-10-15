@@ -1,4 +1,29 @@
-
+#' @title Knapsack dynamic algorithm implementation
+#'
+#' @param x Data.frame with variables 'v' and 'w'
+#' @param W Maximum weight that knapsack can be packed with
+#'
+#' @return list with elements 
+#' \itemize{
+#'   \item {'elements' denoting which objects in x that were used}
+#'   \item {'value' denoting the sum of value for the used objects}
+#' }
+#' @references \url{https://en.wikipedia.org/wiki/Knapsack_problem#0/1_knapsack_problem}
+#' 
+#' @export
+#' 
+#' @examples \dontrun{
+#' set.seed(42)
+#' n <- 2000
+#' knapsack_objects <-
+#'   data.frame(
+#'     w=sample(1:4000, size = n, replace = TRUE),
+#'     v=runif(n = n, 0, 10000)
+#'   )
+#' 
+#' dynamic_knapsack(x = knapsack_objects[1:8,], W = 3500)
+#' dynamic_knapsack(x = knapsack_objects[1:8,], W = 2000)
+#' }
 dynamic_knapsack <- function(x, W){
   stopifnot(is.data.frame(x))
   stopifnot(c("v", "w") %in% names(x))
@@ -51,17 +76,6 @@ dynamic_knapsack <- function(x, W){
   return(list(value = round(value_mat[nrow(value_mat), ncol(value_mat)]),
               elements = sort(elements)))
 }
-
-# set.seed(42)
-# n <- 2000
-# knapsack_objects <-
-#   data.frame(
-#     w=sample(1:4000, size = n, replace = TRUE),
-#     v=runif(n = n, 0, 10000)
-# )
-# 
-# dynamic_knapsack(x = knapsack_objects[1:8,], W = 3500)
-# dynamic_knapsack(x = knapsack_objects[1:8,], W = 2000)
 
 
 # y <- data.frame(w = c(4,1,3,2,5,2),
