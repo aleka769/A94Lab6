@@ -9,9 +9,7 @@ knapsack_objects <- data.frame(
 
 test_that("Correct object is returned", {
   expect_silent(bfk <- dynamic_knapsack(x = knapsack_objects[1:8,], W = 3500))
-  
-  # Fix function output! 
-  # expect_named(bfk, c("value", "elements"))
+  expect_named(bfk, c("value", "elements"))
 })
 
 
@@ -21,26 +19,26 @@ test_that("functions rejects errounous input.", {
 })
 
 test_that("Function return correct results.", {
+  bfk <- dynamic_knapsack(x = knapsack_objects[1:8,], W = 3500)
+  expect_equal(round(bfk$value), 16770)
+  expect_true(all(round(bfk$elements) %in% c(5, 8)))
   
-  # Fix function output! 
-  # bfk <- dynamic_knapsack(x = knapsack_objects[1:8,], W = 3500)
-  # expect_equal(round(bfk$value), 16770)
-  # expect_true(all(round(bfk$elements) %in% c(5, 8)))
+  bfk <- dynamic_knapsack(x = knapsack_objects[1:12,], W = 3500)
+  expect_equal(round(bfk$value), 16770)
+  expect_true(all(round(bfk$elements) %in% c(5, 8)))
   
-  # bfk <- dynamic_knapsack(x = knapsack_objects[1:12,], W = 3500)
-  # expect_equal(round(bfk$value), 16770)
-  # expect_true(all(round(bfk$elements) %in% c(5, 8)))
+  bfk <- dynamic_knapsack(x = knapsack_objects[1:8,], W = 2000)
+  expect_equal(round(bfk$value), 15428)
+  expect_true(all(round(bfk$elements) %in% c(3, 8)))
   
-  # bfk <- dynamic_knapsack(x = knapsack_objects[1:8,], W = 2000)
-  # expect_equal(round(bfk$value), 15428)
-  # expect_true(all(round(bfk$elements) %in% c(3, 8)))
-  
-  # bfk <- dynamic_knapsack(x = knapsack_objects[1:12,], W = 2000)
-  # expect_equal(round(bfk$value), 15428)
-  # expect_true(all(round(bfk$elements) %in% c(3, 8)))
+  bfk <- dynamic_knapsack(x = knapsack_objects[1:12,], W = 2000)
+  expect_equal(round(bfk$value), 15428)
+  expect_true(all(round(bfk$elements) %in% c(3, 8)))
   
   # Removed following test, st is rounded with 2 decimals, sometimes to
-  # 0.00 and sometimes to 0.01...
+  # 0.00 and sometimes to 0.01... Our function is too good!
   # st <- system.time(bfk <- dynamic_knapsack(x = knapsack_objects[1:16,], W = 2000))
   # expect_true(as.numeric(st)[2] > 0.00)
 })
+
+test_that()
