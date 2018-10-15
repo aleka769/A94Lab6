@@ -12,7 +12,6 @@ knitr::opts_chunk$set(collapse = T, comment = "#>")
 ```
 
 ```{r, echo = FALSE, message = FALSE, warning=FALSE}
-library(knapsack)
 library(profvis)
 library(parallel)
 library(testthat)
@@ -234,34 +233,11 @@ p <- profvis::profvis({
 p
 ```
 
-The time demanding steps above is not suprisingly `intToBits` and `mcLapply`. However, the `profvis` profiling has been done with a windows OS using only one core, thereby computational time can probably be lowered if more cores would be used (only for non-unix OS(????????????????)). 
+The time demanding steps above is not suprisingly `intToBits` and `mcLapply`. However, the `profvis` profiling has been done with a windows OS using only one core, thereby computational time can probably be lowered if more cores would be used. A small amout of time was cut down by changing from `seq()` to `seq.int()` in the lapply call, but for the aqtual workhorses `intToBits` and `mcLapply`, we haven't found a way to cut down time. Perhaps an `Rcpp`-implementation of creating the binary matrix would speed things up, but this is not something we have tried to implement.
 
 The bottlenecks seem to be 
 
-## Testing the `knapsack` package
-
-Unit testing allows one to check that the output is of correct format ...ADD SOMETHING(?)... The tests can either check for input or output... The `testthat` package has a couple of smooth functions, as is demonstrated below...
-
-```{r, eval=FALSE, echo = TRUE}
-test_that("Correct object is returned", {
-  expect_silent(bfk <- brute_force_knapsack(x = knapsack_objects[1:8,], W = 3500))
-  expect_named(bfk, c("value", "elements"))
-})
-```
-
-`expect_silent` tests that the wrapper (brute force) does not raise any errors. In other words, a call that seemingly returns nothing is desired. The tests above check for errors when the function is called and expects the output to be named *value* and *elements*.
-
-```{r, eval=FALSE, echo = TRUE}
-test_that("functions rejects errounous input.", {
-  expect_error(greedy_knapsack("hej", 3500))
-  expect_error(greedy_knapsack(x = knapsack_objects[1:8,], W = -3500))
-})
-```
-
-`expect_error` expects the wrapper function to raise an error. The string *"hej"* used in `greedy_knapsack` is supposed to raise an error, since `x` is expected (within the function) to be of format `data.frame`. The second line tests a negative knapsack packing capacity and is obviously supposed to raise an error.
-
-## Documentation using `roxygen2`
-
-
-## Implementation in Rcpp (?)
-
+## Parallelisation
+The brute force function has an option to run in parallel. This utilizes `parallel::mclapply()` and will hence not be honored under non-unix operating systems (windows will run a single-core calculation). When set to `TRUE`, the function wil split the binary matrix representing possible object combinations into a number of chunks equal to the number of available CPU cores - 1 as returned by `parallel::detectCores()`. In the event that the number of objects that are sent to the function are more than 25, parallelisation will be forced, both to speed up the computation and to save memory. with fewer than 20 bjects, the overhead of parallelisation is large enough to not give a boost and hence will run serial instead.
+Performance scales roughtly linearly with the number of cores available for computation, especially for larger number of objects (that is running on 4 cores almost cuts the time needed down to 25% of running on one core).
+More than 30 objects will stop the function since this requires more memory than generally found in standard PC's.
