@@ -34,38 +34,29 @@ To give you a nice intro for the mentioned functions, look below.
 All approaches to optimization are presented with code below. 
 
 ### Brute force: search through all combinations of items
-
-...
+The simplest implementation simply tests all combinations of items and returns the one with the highest value. The method is both time and resource consuming and will take $0.124 s$ to run for 16 objects on the test-laptop with an Intel i7-5500.
 
 ```{r, echo = TRUE, eval = FALSE, message = FALSE}
 brute_force_knapsack(x = knapsack_objects[1:8,], W = 3500)
 ```
 
-...
-
-### Dynamic: don't know what to write here...
-
-...
+### Dynamic: 
+The dynamic approach is faster an less resource hungry than the brute force version, and is still guaranteed to return the optimal result. The function takes $0.025s$ to run on the test-laptop for 500 objects.
 
 ```{r, echo = TRUE, eval = FALSE, message = FALSE}
 dynamic_knapsack(x = knapsack_objects[1:8,], W = 3500)
 ```
 
-...
-
-### Greedy: don't know what to write here...
-
-...
+### Greedy: pack the most value-dense object firsts
+The last implementation simply calculates the value to weight ratio of all objects and packs the best ones it can without overriding the weight limit. Running this algorithm for 1 million objects takes roughtly $14 s$ to run on the test-laptop. Since the only calculation done is the value-weight ratio, (which has the same $O(n)$ as the later while loop) and the sorting of this ratio vector takes more time than these, the overall complexity of the method is $O(n \cdot log(n))$.
 
 ```{r, echo = TRUE, eval = FALSE, message = FALSE}
-### greedy heuristic here
+greedy_knapsack(x = knapsack_objects[1:1000000], W = 3500)
 ```
-
-...
 
 ## Profiling of code using `profvis`
 
-The package `lineprof` is not available for R version 3.4.2, the package `profvis` is instead used for profiling. 
+The package `lineprof` is not available for R version 3.4.2, the package `profvis` is instead used for profiling. It is not possible to see details of the function contents when `profvis` is used as a wrapper for functions in the `knapsack` package. Therefore, another approach to profiling has been made and `echo` is set to `FALSE` in code chunks below. The code contents can be reviewed in output for functions below.
 
 ### Greedy heuristic function
 
@@ -82,6 +73,7 @@ knapsack_objects <- data.frame(
 x <- knapsack_objects[1:1000,]
 W <- 3500
 ```
+
 
 ```{r, echo = FALSE, eval = TRUE}
 # Profiling of heuristic function:
@@ -126,14 +118,13 @@ p <- profvis::profvis({
 p
 ```
 
-The computational time without the `pause` call is 0.03 seconds. The while-loop and if-statement that ...DOES SOMETHING... are most time consuming. LET'S SAY SOMETHING ABOUT APPROACH HERE. I CAN'T THINK OF  FASTER WAY TO IMPLEMENT THIS!
+The computational time without the `pause` call is ($0.03 \pm 0.01$) seconds. The while-loop and if-statement are most time consuming. In order to speed the function up, an implementation in C++ would probably be appropriate. 
 
 ### Brute force function
 
-
 ```{r, echo = TRUE, eval = TRUE}
 # Assign x, W and parallel to match function...
-x        <- knapsack_objects[1:23,] 
+x        <- knapsack_objects[1:16,] 
 W        <- 3500
 parallel <- FALSE
 ```
@@ -235,9 +226,10 @@ p
 
 The time demanding steps above is not suprisingly `intToBits` and `mcLapply`. However, the `profvis` profiling has been done with a windows OS using only one core, thereby computational time can probably be lowered if more cores would be used. A small amout of time was cut down by changing from `seq()` to `seq.int()` in the lapply call, but for the aqtual workhorses `intToBits` and `mcLapply`, we haven't found a way to cut down time. Perhaps an `Rcpp`-implementation of creating the binary matrix would speed things up, but this is not something we have tried to implement.
 
-The bottlenecks seem to be 
-
 ## Parallelisation
+
 The brute force function has an option to run in parallel. This utilizes `parallel::mclapply()` and will hence not be honored under non-unix operating systems (windows will run a single-core calculation). When set to `TRUE`, the function wil split the binary matrix representing possible object combinations into a number of chunks equal to the number of available CPU cores - 1 as returned by `parallel::detectCores()`. In the event that the number of objects that are sent to the function are more than 25, parallelisation will be forced, both to speed up the computation and to save memory. with fewer than 20 bjects, the overhead of parallelisation is large enough to not give a boost and hence will run serial instead.
+
 Performance scales roughtly linearly with the number of cores available for computation, especially for larger number of objects (that is running on 4 cores almost cuts the time needed down to 25% of running on one core).
+
 More than 30 objects will stop the function since this requires more memory than generally found in standard PC's.
