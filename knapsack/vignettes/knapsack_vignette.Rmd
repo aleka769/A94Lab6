@@ -134,7 +134,7 @@ parallel <- FALSE
 # Profiling of brute force function:
 p <- profvis::profvis({
   # pausing because function is too fast!
-  profvis::pause(.001)
+  profvis::pause(.01)
   
   # error checks
   stopifnot(is.data.frame(x))
