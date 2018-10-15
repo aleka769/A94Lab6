@@ -83,10 +83,12 @@ brute_force_knapsack <- function(x, W, parallel = FALSE){
   }
   
   # generate list of numbers for each core to copmute on
-  combo_count <- (2^n)-1
+  combo_count <- (2^n)-1L
   combos_per_core <- combo_count%/%core_count
   core_combos <- lapply(1:core_count, function(x){
-    seq((x-1)*(combos_per_core),(x)*(combos_per_core),1)
+    seq.int(from=as.integer((x-1)*(combos_per_core)),
+            to=as.integer((x)*(combos_per_core)),
+            by=1L)
   })
   if (combo_count%%core_count != 0){
     remainder_seq <- seq(combos_per_core*core_count+1,combo_count,1)

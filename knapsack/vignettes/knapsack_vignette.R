@@ -2,15 +2,16 @@
 knitr::opts_chunk$set(collapse = T, comment = "#>")
 
 ## ---- echo = FALSE, message = FALSE, warning=FALSE-----------------------
-#library(knapsack)
+library(knapsack)
 library(profvis)
 library(parallel)
+library(testthat)
 
 ## ---- echo = TRUE, eval = FALSE, message = FALSE-------------------------
-#  ### brute force here
+#  brute_force_knapsack(x = knapsack_objects[1:8,], W = 3500)
 
 ## ---- echo = TRUE, eval = FALSE, message = FALSE-------------------------
-#  ### dynamic here
+#  dynamic_knapsack(x = knapsack_objects[1:8,], W = 3500)
 
 ## ---- echo = TRUE, eval = FALSE, message = FALSE-------------------------
 #  ### greedy heuristic here
@@ -71,14 +72,6 @@ p <- profvis::profvis({
 p
 
 ## ---- echo = TRUE, eval = TRUE-------------------------------------------
-# Sampled data for profiling
-set.seed(42)
-n <- 2000
-knapsack_objects <- data.frame(
-  w=sample(1:4000, size = n, replace = TRUE),
-  v=runif(n = n, 0, 10000)
-)
-
 # Assign x, W and parallel to match function...
 x        <- knapsack_objects[1:18,] 
 W        <- 3500
@@ -165,4 +158,16 @@ p <- profvis::profvis({
 })
 
 p
+
+## ---- eval=FALSE, echo = TRUE--------------------------------------------
+#  test_that("Correct object is returned", {
+#    expect_silent(bfk <- brute_force_knapsack(x = knapsack_objects[1:8,], W = 3500))
+#    expect_named(bfk, c("value", "elements"))
+#  })
+
+## ---- eval=FALSE, echo = TRUE--------------------------------------------
+#  test_that("functions rejects errounous input.", {
+#    expect_error(greedy_knapsack("hej", 3500))
+#    expect_error(greedy_knapsack(x = knapsack_objects[1:8,], W = -3500))
+#  })
 
