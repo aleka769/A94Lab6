@@ -1,75 +1,21 @@
----
-title: "Intro to knapsack package"
-output: rmarkdown::html_vignette
-vignette: >
-  %\VignetteIndexEntry{Intro to knapsack}
-  %\VignetteEngine{knitr::rmarkdown}
-  \usepackage[utf8]{inputenc}
----
-
-```{r, echo = FALSE}
+## ---- echo = FALSE-------------------------------------------------------
 knitr::opts_chunk$set(collapse = T, comment = "#>")
-```
 
-```{r, echo = FALSE, message = FALSE, warning=FALSE}
-library(knapsack)
+## ---- echo = FALSE, message = FALSE, warning=FALSE-----------------------
+#library(knapsack)
 library(profvis)
 library(parallel)
-```
 
-`knapsack` allows you to pack your knapsack in the optimal way, without using your brain! If you have too many options, or if you're just lazy, then let the computer think for you... Included are no less than three different algorithms that optimizes the value of the stuff you want to pack without extending the limitaions of your knapsack:
+## ---- echo = TRUE, eval = FALSE, message = FALSE-------------------------
+#  ### brute force here
 
-* `brute_force_knapsack` -- If you're not afraid of putting your computer to the limit, use this method!
+## ---- echo = TRUE, eval = FALSE, message = FALSE-------------------------
+#  ### dynamic here
 
-* `dynamic_knapsack` -- A little more gentle to memory, yet as precise as the brute force route!
+## ---- echo = TRUE, eval = FALSE, message = FALSE-------------------------
+#  ### greedy heuristic here
 
-* `greedy_knapsack` -- You're not a perfectionist, but you still want to pack like a pro? Well, go ahead and use the heuristic approach!
-
-To give you a nice intro for the mentioned functions, look below. 
-
-**Pack on!!**
-
-## The three knapsack approaches 101
-
-All approaches to optimization are presented with code below. 
-
-### Brute force: search through all combinations of items
-
-...
-
-```{r, echo = TRUE, eval = FALSE, message = FALSE}
-brute_force_knapsack(x = knapsack_objects[1:8,], W = 3500)
-```
-
-...
-
-### Dynamic: don't know what to write here...
-
-...
-
-```{r, echo = TRUE, eval = FALSE, message = FALSE}
-dynamic_knapsack(x = knapsack_objects[1:8,], W = 3500)
-```
-
-...
-
-### Greedy: don't know what to write here...
-
-...
-
-```{r, echo = TRUE, eval = FALSE, message = FALSE}
-### greedy heuristic here
-```
-
-...
-
-## Profiling of code using `profvis`
-
-The package `lineprof` is not available for R version 3.4.2, the package `profvis` is instead used for profiling. 
-
-### Greedy heuristic function
-
-```{r, echo = TRUE, eval = TRUE, message = FALSE}
+## ---- echo = TRUE, eval = TRUE, message = FALSE--------------------------
 # Sampled data for profiling
 set.seed(42)
 n <- 2000
@@ -81,9 +27,8 @@ knapsack_objects <- data.frame(
 # Assign x and W to match function...
 x <- knapsack_objects[1:1000,]
 W <- 3500
-```
 
-```{r, echo = FALSE, eval = TRUE}
+## ---- echo = FALSE, eval = TRUE------------------------------------------
 # Profiling of heuristic function:
 p <- profvis::profvis({
   # pausing because function is too fast!
@@ -124,22 +69,22 @@ p <- profvis::profvis({
 })
 
 p
-```
 
-The computational time without the `pause` call is 0.03 seconds. The while-loop and if-statement that ...DOES SOMETHING... are most time consuming. LET'S SAY SOMETHING ABOUT APPROACH HERE. I CAN'T THINK OF  FASTER WAY TO IMPLEMENT THIS!
+## ---- echo = TRUE, eval = TRUE-------------------------------------------
+# Sampled data for profiling
+set.seed(42)
+n <- 2000
+knapsack_objects <- data.frame(
+  w=sample(1:4000, size = n, replace = TRUE),
+  v=runif(n = n, 0, 10000)
+)
 
-### Brute force function
-
-
-```{r, echo = TRUE, eval = TRUE}
 # Assign x, W and parallel to match function...
 x        <- knapsack_objects[1:18,] 
 W        <- 3500
 parallel <- FALSE
-```
 
-
-```{r, echo = FALSE, eval = TRUE}
+## ---- echo = FALSE, eval = TRUE------------------------------------------
 # Profiling of brute force function:
 p <- profvis::profvis({
   # pausing because function is too fast!
@@ -220,36 +165,4 @@ p <- profvis::profvis({
 })
 
 p
-```
-
-The time demanding steps above is not suprisingly `intToBits` and `mcLapply`. However, the `profvis` profiling has been done with a windows OS using only one core, thereby computational time can probably be lowered if more cores would be used (only for non-unix OS(????????????????)). 
-
-The bottlenecks seem to be 
-
-## Testing the `knapsack` package
-
-Unit testing allows one to check that the output is of correct format ...ADD SOMETHING(?)... The tests can either check for input or output... The `testthat` package has a couple of smooth functions, as is demonstrated below...
-
-```{r, echo = TRUE}
-test_that("Correct object is returned", {
-  expect_silent(bfk <- brute_force_knapsack(x = knapsack_objects[1:8,], W = 3500))
-  expect_named(bfk, c("value", "elements"))
-})
-```
-
-`expect_silent` tests that the wrapper (brute force) does not raise any errors. In other words, a call that seemingly returns nothing is desired. The tests above check for errors when the function is called and expects the output to be named *value* and *elements*.
-
-```{r, echo = TRUE}
-test_that("functions rejects errounous input.", {
-  expect_error(greedy_knapsack("hej", 3500))
-  expect_error(greedy_knapsack(x = knapsack_objects[1:8,], W = -3500))
-})
-```
-
-`expect_error` expects the wrapper function to raise an error. The string *"hej"* used in `greedy_knapsack` is supposed to raise an error, since `x` is expected (within the function) to be of format `data.frame`. The second line tests a negative knapsack packing capacity and is obviously supposed to raise an error.
-
-## Documentation using `roxygen2`
-
-
-## Implementation in Rcpp (?)
 
