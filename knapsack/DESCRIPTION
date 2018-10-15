@@ -9,7 +9,7 @@ License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
 RoxygenNote: 6.1.0
-Imports: parallel
+Imports: parallel, profvis
 URL: https://github.com/aleka769/A94Lab6
 BugReports: https://github.com/aleka769/A94Lab6/issues
 Suggests: testthat, knitr, rmarkdown
